@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Years 2026</title>
+</head>
+<style>
+    body, html {
+        margin: 0px;
+        padding: 0px;
+        background-color: black;
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
+
+    .canvas-container {
+        width: 100vw;
+        height: 100vh;
+        z-index: 2;
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+
+    .canvas {
+        width: 100%;
+        height: 100%;
+    }
+
+    .starry-bg {
+        position: fixed;
+        background-image: url("Graphics/NightSky.jpg");
+        background-size: contain;
+        background-position: top;
+        background-repeat: no-repeat;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+        filter: brightness(.75);
+    }
+
+    .skyline-container {
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        top: 35vh;
+        left: 0;
+        background-image: url("Graphics/skyline.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        z-index: 4;
+        filter: brightness(0.75) contrast(2) brightness(1.25) hue-rotate(240deg);
+        animation: hue-rot 2.5s linear infinite;
+        pointer-events: none;
+    }
+
+    .skyline-gradient {
+        width: 100%;
+        height: 50%;
+        z-index: 5;
+        position: absolute;
+        left: 0px;
+        top: 60vh;
+        background-image: linear-gradient(to top, rgba(0,0,0,1) 63%, rgba(0,0,0,0.5), transparent);
+    }
+
+    .spinner {
+        z-index: 3;
+        width: 200px;
+        height: 200px;
+        position: fixed;
+        top: calc(40vh - 200px);
+        left: calc(50vw - 110px);
+        background-color: black;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: breathe 2.5s linear infinite;
+        border: 5px solid #B76E79;
+    }
+
+    .spinner::before {        
+        content: '';
+        position: absolute;
+        inset: -20px;
+        background: conic-gradient(
+            from 0deg,
+            #d4aF37,
+            #c0c0c0,
+            #B76E79,
+            #c0c0c0,
+            #d4aF37
+        );
+        border-radius: 50%;
+        border: 5px solid #B76E79;
+        animation: rotate var(--speed, 2.5s) linear infinite;
+        filter: blur(25px);
+    }
+
+    .spinner:hover {
+        --speed: 1s;
+    }
+
+    .spinner::after {
+        content: '';
+        position: absolute;
+        inset: 5px;
+        background: #f7e7ce;
+        border-radius: 50%;
+        filter: blur(2px) opacity(0.85);
+        box-shadow: inset 0 0 20px #B76E79;
+    }
+
+    .header {
+        font-family: serif;
+        font-size: 4rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #d4aF37, #c0c0c0, #B76E79);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        z-index: 4;
+        animation: breath 2.5s linear infinite;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+    }
+
+    .content {
+        background-color: black;
+        position: absolute;
+        top: 110vh;
+        margin: 0px;
+        height: 100vh;
+        width: 100vw;
+        z-index: 4;
+        font-family: serif;
+        font-size: 5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #d4aF37, #c0c0c0, #B76E79);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-style: italic;
+        animation: breathe 2.5s linear infinite;
+    }
+
+    .content-gradient {
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background-image: linear-gradient(to top, #d4aF37, transparent);
+    }
+
+    @keyframes rotate {
+            0% { transform: rotate(0deg);}
+            50% { transform: rotate(180deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    @keyframes breathe {
+        0% { filter: brightness(1) contrast(1); scale: 1; }
+        50% { filter: brightness(1) contrast(1.25); scale: 1.05; }
+        100% { filter: brightness(1) contrast(1); scale: 1 }
+    }
+
+    @keyframes shine {
+        0% { background-position: 200% center; }
+        100% { background-position: 100% left; }
+    }
+
+    @keyframes hue-rot {
+        0% { filter: brightness(0.75) contrast(2) brightness(1.25) hue-rotate(0deg)}
+        50% { filter: brightness(0.75) contrast(2.25) brightness(1.15) hue-rotate(180deg)}
+        100% { filter: brightness(0.75) contrast(2) brightness(1.25) hue-rotate(360deg)} 
+    }
+</style>
+
+<body>
+    <div class="starry-bg" id="starry-bg"></div>
+    <div class="canvas-container">
+        <canvas class="canvas" id="canvas"></canvas>
+    </div>
+    <div class="spinner">
+        <span class="header">2026</span>
+    </div>
+    <div class="skyline-container">
+        <div class="skyline-gradient"></div>
+        
+    </div>
+    <div class="content">
+        <span>Happy</span>
+        <span>New Years!</span>
+        <div class="content-gradient"></div>
+    </div>
+    
+    <script>
+        //Canvas settings
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        //Page effects
+        let particles = [];
+        const spinner = document.querySelector('.spinner');
+        const starryBg = document.getElementById('starry-bg');
+
+        //Progress ticks up when user is holding down the 2026 dif after click
+        let progress = 0.75;
+        let progInc = 0.025;       
+        let hasTriggered = false; 
+
+        //For smoother scrolling
+        let scrollProgress = 0.1;
+        const scrollSpeed = 0.025;
+        const scrollCap = window.innerHeight * 0.3;        
+
+        //Reset Browser scroll on refresh
+        window.scrollTo({
+            top: scrollCap * scrollProgress,
+            behavior: `smooth`
+        });
+
+        //Mousedown and mobile touch logic for fireworks      
+        ['mousedown', 'touchstart'].forEach(evt => {
+            window.addEventListener(evt, (e) => {
+                let x, y;
+
+                if (e.type === 'touchstart') {
+                    // Touch events store coordinates in a list
+                    x = e.touches[0].clientX;
+                    y = e.touches[0].clientY;
+                } else {
+                    // Mouse events are straightforward
+                    x = e.clientX;
+                    y = e.clientY;
+                }
+
+                spawnFirework(x, y);
+            });
+
+            //Start firing several fireworks in a loop
+            spinner.addEventListener(evt, (e) => {
+                e.preventDefault();
+                startFiring();
+            }, {passive: false})
+        });
+
+        //Stops fireworks after mouse released from 2026 button
+        ['mouseup', 'touchend', 'touchcancel'].forEach(evt => 
+            spinner.addEventListener(evt, stopFiring)
+        );
+
+
+        //Firework handling
+        let fireworkTimer;
+
+        function startFiring() {
+            spinner.style.setProperty('--speed', `0.75s`);
+
+            fireworkTimer = setInterval(() => {
+                spawnFirework(Math.random() * window.innerWidth, Math.random() * window.innerHeight);    
+                handleProgress();
+                scrollWindow();
+            }, 100);
+        }
+
+        function stopFiring() {
+            if (hasTriggered) return;
+            
+            clearInterval(fireworkTimer);
+            spinner.style.setProperty('--speed', `2.5s`);
+        }
+
+        function spawnFirework(x, y) {
+            const colors = ['#D4Af37', '#ffd700', '#c0c0c0', '#e5e4e2', '#f7e7ce', '#b76e79'];
+            const chosenColor = colors[Math.floor(Math.random() * colors.length)];
+            for(let i = 0; i < 30; i++) {
+                particles.push(new Particle(x, y, Math.random() * 360, chosenColor));
+            }
+        }
+
+
+        //Scroll progress handling based on button interaction
+        function handleProgress() {
+            progress += progInc;
+
+            //Cap brightness at 1
+            if (progress > 1) progress = 1;        
+            
+            starryBg.style.filter = `brightness(${progress})`;            
+        }
+
+        function scrollWindow() {
+            scrollProgress += scrollSpeed;
+            let scrollTarget = scrollCap * scrollProgress;
+
+            if (scrollTarget > scrollCap) {
+                scrollTarget = scrollCap;
+                hasTriggered = true;
+            }
+
+
+            window.scrollTo({
+                top: scrollTarget,
+                behavior: 'auto'
+            });
+        }
+
+        //Firework particles
+        class Particle {
+            constructor(x, y, degrees, color) {
+                this.x = x;
+                this.y = y;
+                this.angle = degrees * (Math.PI / 180);
+                this.color = color;
+                this.speed = Math.random() * 5 + 1;
+                this.radius = Math.random() * 2 + 2;
+                this.lifespan = 1.0;
+                this.decay = Math.random() * 0.015 + 0.01;
+            }
+
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                this.y += 0.05; //Gravity
+                this.lifespan -= this.decay;
+            }
+
+            draw(ctx) {
+                if (this.lifespan <= 0) return;
+                
+                ctx.save();
+                ctx.globalAlpha = this.lifespan;
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles = particles.filter(p => p.lifespan > 0);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw(ctx);
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

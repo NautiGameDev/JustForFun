@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>New Years 2026</title>
 </head>
 <style>
+    :root {
+        --vh: 100dvh;
+    }
+
     body, html {
         margin: 0px;
         padding: 0px;
@@ -16,7 +20,7 @@
 
     .canvas-container {
         width: 100vw;
-        height: 100vh;
+        height: 100dvh;
         z-index: 2;
         position: fixed;
         top: 0;
@@ -38,16 +42,16 @@
         top: 0;
         left: 0;
         width: 100vw;
-        height: 100vh;
+        height: 100dvh;
         z-index: 1;
         filter: brightness(.75);
     }
 
     .skyline-container {
         width: 100vw;
-        height: 100vh;
+        height: 100dvh;
         position: absolute;
-        top: 35vh;
+        top: 35dvh;
         left: 0;
         background-image: url("Graphics/skyline.png");
         background-repeat: no-repeat;
@@ -136,7 +140,7 @@
         position: absolute;
         top: 110vh;
         margin: 0px;
-        height: 100vh;
+        height: 100dvh;
         width: 100vw;
         z-index: 4;
         font-family: serif;
@@ -206,6 +210,8 @@
     </div>
     
     <script>
+        
+
         //Canvas settings
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext('2d');
@@ -225,13 +231,14 @@
         //For smoother scrolling
         let scrollProgress = 0.1;
         const scrollSpeed = 0.025;
-        const scrollCap = window.innerHeight * 0.3;        
+        const scrollCap = document.documentElement.clientHeight * 0.35;        
 
         //Reset Browser scroll on refresh
-        window.scrollTo({
-            top: scrollCap * scrollProgress,
-            behavior: `smooth`
-        });
+        const initScroll = scrollCap * scrollProgress;
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, initScroll);
 
         //Mousedown and mobile touch logic for fireworks      
         ['mousedown', 'touchstart'].forEach(evt => {

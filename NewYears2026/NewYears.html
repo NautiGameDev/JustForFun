@@ -15,7 +15,14 @@
         padding: 0px;
         background-color: black;
         overflow-x: hidden;
-        overflow-y: hidden;
+        overflow-y: hidden; 
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* Edge */
+        overscroll-behavior: none;
+    }
+
+    body::-webkit-scrollbar {
+    display: none;
     }
 
     .canvas-container {
@@ -26,6 +33,7 @@
         top: 0;
         left: 0;
         pointer-events: none;
+        margin: 0px;
     }
 
     .canvas {
@@ -140,11 +148,10 @@
         position: absolute;
         top: 110vh;
         margin: 0px;
-        height: 100dvh;
         width: 100vw;
-        z-index: 4;
+        z-index: 5;
         font-family: serif;
-        font-size: 5rem;
+        font-size: 4.5rem;
         font-weight: 700;
         background: linear-gradient(135deg, #d4aF37, #c0c0c0, #B76E79);
         -webkit-background-clip: text;
@@ -157,14 +164,16 @@
         animation: breathe 2.5s linear infinite;
     }
 
+   
+
     .content-gradient {
         width: 100%;
-        height: 100%;
-        z-index: 5;
+        height: 115%;
+        z-index: 3;
         position: absolute;
-        top: 0px;
+        top: 25%;
         left: 0px;
-        background-image: linear-gradient(to top, #d4aF37, transparent);
+        background-image: linear-gradient(to top, rgba(212, 175, 55, 0.75), rgba(212, 175, 55, 0.5), rgba(212, 175, 55, .3), rgba(212, 175, 55, .1), transparent);
     }
 
     @keyframes rotate {
@@ -204,8 +213,8 @@
         
     </div>
     <div class="content">
-        <span>Happy</span>
-        <span>New Years!</span>
+        <span class="nye-text">Happy</span>
+        <span class="nye-text">New Years!</span>
         <div class="content-gradient"></div>
     </div>
     
@@ -231,7 +240,7 @@
         //For smoother scrolling
         let scrollProgress = 0.1;
         const scrollSpeed = 0.025;
-        const scrollCap = document.documentElement.clientHeight * 0.35;        
+        const scrollCap = document.documentElement.clientHeight * 0.45;        
 
         //Reset Browser scroll on refresh
         const initScroll = scrollCap * scrollProgress;
@@ -320,10 +329,7 @@
             }
 
 
-            window.scrollTo({
-                top: scrollTarget,
-                behavior: 'auto'
-            });
+            window.scrollTo(0, scrollTarget);
         }
 
         //Firework particles

@@ -15,7 +15,7 @@
         padding: 0px;
         background-color: black;
         overflow-x: hidden;
-        overflow-y: hidden; 
+        overflow-y: auto; 
         scrollbar-width: none; /* Firefox */
         -ms-overflow-style: none; /* Edge */
         overscroll-behavior: none;
@@ -290,8 +290,10 @@
             if(hasTriggered) return;
             fireworkTimer = setInterval(() => {
                 spawnFirework(Math.random() * window.innerWidth, Math.random() * window.innerHeight);    
-                handleProgress();
-                scrollWindow();
+
+                //Artifacts -> Used for auto scrolling for social media. Removed for inconsistent scrolling on mobile devices.
+                //handleProgress();
+                //scrollWindow();
             }, 100);
         }
 
